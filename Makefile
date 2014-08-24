@@ -1,28 +1,21 @@
-main-native:
-	ocamlbuild -I src/ main.native
-	@cp `readlink main.native` bin/main.native
-	@rm main.native
-
-main:
-	ocamlbuild -I src/ main.byte
-	@cp `readlink main.byte` bin/main.byte
-	@rm main.byte
-
-tests-native:
-	ocamlbuild -I src/ -tag pkg_oUnit tests.native
-	@cp `readlink tests.native` bin/tests.native
-	@rm tests.native
-	bin/tests.native
-	@echo
-
-tests:
-	ocamlbuild -I src/ -tag pkg_oUnit tests.byte
-	@cp `readlink tests.byte` bin/tests.byte
-	@rm tests.byte
-	bin/tests.byte
-	@echo
+build: build-native
+tests: tests-native
 
 clean:
-	-rm -rf _build/ bin/*
+	@rm -rf _build/
 
-.PHONY: main-native main tests-native tests clean
+build-native:
+	@ocamlbuild -I src/ -build-dir _build/ main.native
+
+build-byte:
+	@ocamlbuild -I src/ -build-dir _build/ main.byte
+
+tests-native:
+	@ocamlbuild -I src/ -build-dir _build/ -tag pkg_oUnit tests.native
+	@_build/tests/tests.native
+
+tests-byte:
+	@ocamlbuild -I src/ -build-dir _build/ -tag pkg_oUnit tests.byte
+	@_build/tests/tests.byte
+
+.PHONY: build tests clean build-native build-byte tests-native tests-byte
